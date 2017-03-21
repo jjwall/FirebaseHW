@@ -1,20 +1,21 @@
 $(document).ready(function() {
 
-/*var config = {
+var config = {
     apiKey: "AIzaSyAOFi3bIryWbgOrsTHyoS3bTKzTGQOpcHs",
     authDomain: "thecodingbayshop.firebaseapp.com",
     databaseURL: "https://thecodingbayshop.firebaseio.com",
-    storageBucket: "thecodingbayshop.appspot.com",
-    messagingSenderId: "648124109917"
+    storageBucket: "thecodingbayshop.appspot.com"
   };
+
   firebase.initializeApp(config);
 
-var database = firebase.database();*/
+var database = firebase.database();
 
 //examples for user authentication uses. i.e. as players level up
 //variable that increases size of blankArray.length, right now hard coded in at 5
 //variable that decreases setInterval time, right now hard coded in at 1000 ms
 
+//game variables below
 var blankArray = [];
 
 var attackSetUpPhase;
@@ -30,6 +31,89 @@ var defendMechanic;
 var defendDisplay = [];
 
 var x;
+
+//firebase variables below
+var playersRef = database.ref("players");
+
+var username = "guest";
+
+var playerIndex = false;
+
+var numberOfPlayers = null;
+
+var playerOne = false;
+
+var playerTwo = false;
+
+var playerOneData = null;
+
+var playerTwoData = null;
+
+var peoplePlaying = null;
+
+playersRef.on("value", function(snapshot) {
+	peoplePlaying = snapshot.numChildren();
+
+	playerOne = snapshot.child("1").exists();
+	playerTwo = snapshot.child("2").exists();
+
+	playerOneData = snapshot.child("1").val();
+  	playerTwoData = snapshot.child("2").val();
+});
+
+$("#start").click(function() {
+	enterGame ();
+});
+
+function enterGame (){
+
+if (peoplePlaying < 2) {
+	console.log(playerOne);
+
+    if (playerOne) {
+      playerIndex = 2;
+    }
+    else {
+      playerIndex = 1;
+    }
+
+	playerRef = database.ref("/players/" + playerIndex);
+
+	playerRef.set({
+      name: username,
+      wins: 0,
+      losses: 0,
+      choice: null
+    });
+
+    playerRef.onDisconnect().remove();
+}
+   else {
+   	alert("sorry game full!")
+    }
+}
+
+playersRef.on("value", function(snapshot) {
+	playerOne = snapshot.child("1").exists();
+  	playerTwo = snapshot.child("2").exists();
+
+  	playerOneData = snapshot.child("1").val();
+  	playerTwoData = snapshot.child("2").val();
+
+  	if (playerOne) {
+    $("#player1-name").text("Player 1 Rdy");
+    $("#player1-wins").text("Wins: " + playerOneData.wins);
+    $("#player1-losses").text("Losses: " + playerOneData.losses);
+  }
+  else {
+    // If there is no player 1, clear win/loss data and show waiting
+    $("#player1-name").text("Waiting for Player 1");
+    $("#player1-wins").empty();
+    $("#player1-losses").empty();
+  }
+  });
+
+//enterGame();
 
 //window states will be needed to determine when this is true for players
 document.addEventListener('keydown', attackInputs, true);
