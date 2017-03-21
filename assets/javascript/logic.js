@@ -148,7 +148,7 @@ playersRef.on("child_changed", function(snapshot){
 				currentPhaseRef.set("defendAttack");
 				console.log(currentPhase);
 			}
-			else if ((currentPhase === "defendAttack") && (playerOne === false)){
+			else if ((currentPhase === "defendAttack") && (playerOne)){
 				currentPhaseRef.set("attackDefend");
 				console.log(currentPhase);
 			}},1000);
