@@ -9,14 +9,14 @@ var config = {
 
   firebase.initializeApp(config);
 
-var database = firebase.database();
-
 //examples for user authentication uses. i.e. as players level up
 //variable that increases size of blankArray.length, right now hard coded in at 5
 //variable that decreases setInterval time, right now hard coded in at 1000 ms
 
 //game variables below
 var blankArray = [];
+
+var attackArray = [];
 
 var attackSetUpPhase;
 
@@ -33,11 +33,18 @@ var defendDisplay = [];
 var x;
 
 //firebase variables below
+var database = firebase.database();
+
 var playersRef = database.ref("players");
+
+var currentPhaseRef = database.ref("phase");
+
+var currentPhase = null;
 
 var username = "guest";
 
 var playerIndex = false;
+//determines which player you are, so eventListeners will depend on this
 
 var numberOfPlayers = null;
 
@@ -65,6 +72,12 @@ $("#start").click(function() {
 	enterGame ();
 });
 
+playersRef.on("child_added", function(snapshot){
+	if (peoplePlaying === 1) {
+		currentPhaseRef.set("attackDefend");
+	}
+})
+
 function enterGame (){
 
 if (peoplePlaying < 2) {
@@ -83,13 +96,19 @@ if (peoplePlaying < 2) {
       name: username,
       wins: 0,
       losses: 0,
-      choice: null
+      attackArray: false
     });
 
     playerRef.onDisconnect().remove();
+    //disconnects player
+
+    currentPhaseRef.onDisconnect().remove();
+    //sets phase back to null
+
+    $("#dynamic_button").html("<h1>Hi Player " + playerIndex + "</h1>");
 }
    else {
-   	alert("sorry game full!")
+   	alert("sorry game full!");
     }
 }
 
@@ -111,9 +130,34 @@ playersRef.on("value", function(snapshot) {
     $("#player1-wins").empty();
     $("#player1-losses").empty();
   }
+  if (playerTwo) {
+    $("#player2-name").text("Player 2 Rdy");
+    $("#player2-wins").text("Wins: " + playerTwoData.wins);
+    $("#player2-losses").text("Losses: " + playerTwoData.losses);
+  }
+  else {
+  	$("#player2-name").text("Waiting for Player 2");
+    $("#player2-wins").empty();
+    $("#player2-losses").empty();
+  }
+
   });
 
-//enterGame();
+//currentPhase.child("phase").set("attackDefend")
+
+currentPhaseRef.on("value", function(snapshot) {
+	//phases need to be, attackDefend and defendAttack
+	currentPhase = snapshot.val();
+
+	if (currentPhase === "attackDefend"){
+		if (playerIndex === 1) {
+			console.log(playerIndex);
+		}
+		if (playerIndex === 2) {
+			console.log(playerIndex);
+		}
+	}
+});
 
 //window states will be needed to determine when this is true for players
 document.addEventListener('keydown', attackInputs, true);
@@ -230,6 +274,7 @@ if (blankArray.length === 5) {
 	document.addEventListener('keydown', defendInputs, true);
 	attackSetUpPhase = blankArray.slice(0, 6);
 	attackReady = attackSetUpPhase;
+	playersRef.child("1").child("attackArray").set(playerOneData.attackArray = attackSetUpPhase);
 	blankArray = [];
 	startAttack();
 	}
