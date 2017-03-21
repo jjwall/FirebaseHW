@@ -425,7 +425,6 @@ function parryCheck() {
 			$("#message").text("");
 		}
 	}
-	defendMechanic = "";
 	if (currentPhase === "defendAttack"){
 		if (playerTwoData.attackArray[x] === defendMechanic) {
 			$("#message").text("Parried!");
