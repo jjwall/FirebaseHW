@@ -144,7 +144,7 @@ playersRef.on("child_changed", function(snapshot){
 			setTimeout(function(){
 			$("#attacks").empty();
 			$("#message").text("");//},1000);
-			if ((currentPhase === "attackDefend") && (playerOne)){
+			if ((currentPhase === "attackDefend") && (playerOne === false)){
 				currentPhaseRef.set("defendAttack");
 				console.log(currentPhase);
 			}
@@ -239,11 +239,13 @@ currentPhaseRef.on("value", function(snapshot) {
 			console.log(playerIndex);
 			document.removeEventListener('keydown', defendInputs, true);
 			document.addEventListener('keydown', attackInputs, true);
+			console.log("we wanna see this");
 		}
 		if (playerIndex === 2) {
 			console.log(playerIndex);
 			document.removeEventListener('keydown', attackInputs, true);
 			document.addEventListener('keydown', defendInputs, true);
+			console.log("we wanna see this");
 		}
 		//playersRef.on("value", function(snapshot) {
 		//all game logic should go hear I believe
@@ -254,11 +256,13 @@ currentPhaseRef.on("value", function(snapshot) {
 			console.log(playerIndex);
 			document.removeEventListener('keydown', attackInputs, true);
 			document.addEventListener('keydown', defendInputs, true);
+			console.log("we wanna see this");
 		}
 		if (playerIndex === 2) {
 			console.log(playerIndex);
 			document.removeEventListener('keydown', defendInputs, true);
 			document.addEventListener('keydown', attackInputs, true);
+			console.log("we wanna see this");
 		}
 	}
 });
@@ -290,6 +294,7 @@ function attackInputs() {
 	var downKey = event.keyCode;
 	if (40 === downKey){
 	blankArray.push("-");
+	console.log("hi");
 	attackPhase();
 		}
 	var qKey = event.keyCode;
