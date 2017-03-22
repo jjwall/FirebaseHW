@@ -89,11 +89,11 @@ playersRef.on("child_added", function(snapshot){
 //wanted to use playersRef.attackArray.on("value")... in order to be specific..
 playersRef.on("child_changed", function(snapshot){
 	//i.e. startAttack();
-	x = 0;
 	setTimeout(function(){doThis()},1000);
 		//console.log(playerOneData.attackArray);
 		console.log(snapshot);
 	function doThis () {
+	x = 0;
 	$("#attacks").empty();
 	if (currentPhase === "attackDefend"){
 		$("#attacks").append(playerOneData.attackArray[x]);
