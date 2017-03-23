@@ -32,6 +32,16 @@ var defendDisplay = [];
 
 var x;
 
+var hit1 = false;
+
+var hit2 = false;
+
+var hit3 = false;
+
+var hit4 = false;
+
+var hit5 = false;
+
 //firebase variables below
 var database = firebase.database();
 
@@ -86,7 +96,7 @@ playersRef.on("child_added", function(snapshot){
 //child_changed might be jank code, player.ref(attackArray) starts off equal to false
 //as soon as 5 attack inputs are made by player 1, attackArray "changes" thus we are able
 //to use the event listener (for firebase) on("child_changed")
-//wanted to use playersRef.attackArray.on("value")... in order to be specific..
+//wanted to use playersRef.attackArray.on("value")... in order to be specific.. but not sure how that code would look like
 playersRef.on("child_changed", function(snapshot){
 	//i.e. startAttack();
 	setTimeout(function(){doThis()},1000);
@@ -174,7 +184,7 @@ if (peoplePlaying < 2) {
 
 	playerRef.set({
       name: username,
-      wins: 0,
+      health: 100,
       losses: 0,
       attackArray: false
     });
@@ -201,27 +211,32 @@ playersRef.on("value", function(snapshot) {
 
   	if (playerOne) {
     $("#player1-name").text("Player 1 Rdy");
-    $("#player1-wins").text("Wins: " + playerOneData.wins);
+    //$("#player1-wins").text("Wins: " + playerOneData.wins);
+    $("#p1-health").css('width', playerOneData.health+'%').attr('aria-valuenow', playerOneData.health);
     $("#player1-losses").text("Losses: " + playerOneData.losses);
   }
   else {
     // If there is no player 1, clear win/loss data and show waiting
     $("#player1-name").text("Waiting for Player 1");
-    $("#player1-wins").empty();
+    //$("#player1-wins").empty();
+    $("#p1-health").css('width', 0+'%').attr('aria-valuenow', 0);
+    //on disconnect health drops to zero, this could cause problems down the line, check back later
     $("#player1-losses").empty();
   }
   if (playerTwo) {
     $("#player2-name").text("Player 2 Rdy");
-    $("#player2-wins").text("Wins: " + playerTwoData.wins);
+    //$("#player2-wins").text("Wins: " + playerTwoData.wins);
+    $("#p2-health").css('width', playerTwoData.health+'%').attr('aria-valuenow', playerTwoData.health);
     $("#player2-losses").text("Losses: " + playerTwoData.losses);
   }
   else {
   	$("#player2-name").text("Waiting for Player 2");
-    $("#player2-wins").empty();
+    //$("#player2-wins").empty();
+    $("#p2-health").css('width', 0+'%').attr('aria-valuenow', 0);
     $("#player2-losses").empty();
   }
 
-  });
+});
 
 //currentPhase.child("phase").set("attackDefend")
 
@@ -422,12 +437,24 @@ function parryCheck() {
 	if (currentPhase === "attackDefend"){
 		if (playerOneData.attackArray[x] === defendMechanic) {
 			$("#message").text("Parried!");
+			//basically if player 1 attacks, and p2 puts right input, p2 parries
 		}
 		else if (playerIndex === 2) {
-			$("#message").text("You took a hit!");
+			if (hit1 === false && hit2 === false && hit3 === false && hit4 === false && hit5 === false) {
+				$("#message").text("You took a hit!");
+				hit1 = true;
+				playersRef.child("2").child("health").set(playerTwoData.health - 5);
+			}
+			else if (hit1 && hit2 === false && hit3 === false && hit4 === false && hit5 === false) {
+				$("#message").text("You took a hit!");
+				hit2 = true;
+				playersRef.child("2").child("health").set(playerTwoData.health - 5);
+				//etc.
 		}
+	}
 		else {
 			$("#message").text("");
+			//nothing should be shown for p1, prolly jank cause sometimes parry shows up
 		}
 	}
 	if (currentPhase === "defendAttack"){
@@ -442,6 +469,18 @@ function parryCheck() {
 		}
 	}
 	defendMechanic = "";
+}
+function doNothing () {};
+
+function hitConfirm() {
+    /*var executed = false;
+    return function () {
+        if (!executed) {
+            executed = true;*/
+            playersRef.child("2").child("health").set(playerTwoData.health - 5);
+            return
+        //}
+   // };
 }
 
 });
