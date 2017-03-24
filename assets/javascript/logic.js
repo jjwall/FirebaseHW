@@ -16,21 +16,23 @@ var config = {
 //game variables below
 var blankArray = [];
 
-var attackArray = [];
-
 var attackSetUpPhase;
 
 var attackReady;
 
 var attackDisplay;
 
-var attackTimer;
+var attackTimer1;
+
+var attackTimer2;
 
 var defendMechanic;
 
 var defendDisplay = [];
 
 var x;
+
+var y;
 
 var hit1 = false;
 
@@ -47,6 +49,10 @@ var database = firebase.database();
 
 var playersRef = database.ref("players");
 
+var attack1Ref = database.ref("players/1/attackArray");
+
+var attack2Ref = database.ref("players/2/attackArray");
+
 var currentPhaseRef = database.ref("phase");
 
 var currentPhase = null;
@@ -61,6 +67,10 @@ var numberOfPlayers = null;
 var playerOne = false;
 
 var playerTwo = false;
+
+var playerOneAttack = null;
+
+var playerTwoAttack = null;
 
 var playerOneData = null;
 
@@ -77,6 +87,10 @@ playersRef.on("value", function(snapshot) {
 
 	playerOneData = snapshot.child("1").val();
   	playerTwoData = snapshot.child("2").val();
+
+  	playerOneAttack = snapshot.child("1/attackArray").val();
+  	playerTwoAttack = snapshot.child("2/attackArray").val();
+  	console.log(playerOneAttack);
 });
 
 //basically a dynamic button that can only be pushed once by each player
@@ -89,83 +103,157 @@ $("#start").click(function() {
 playersRef.on("child_added", function(snapshot){
 	if (peoplePlaying === 1) {
 		//if (playerOneData.AttackArray.length > 5)
-		currentPhaseRef.set("attackDefend");
+		startingPhase();
+		//currentPhaseRef.set("attackDefend");
 	}
 });
+
+//attack1Ref.on("child_changed", function(snapshot){
+	//playerOneAttack = snapshot.child("1/attackArray").val();
+  	//playerTwoAttack = snapshot.child("2/attackArray").val();
+  	//console.log(playerOneAttack);
+//});
+
+var startingPhase = function () {
+	currentPhaseRef.set("attackDefend");
+	startingPhase = function(){};
+}
 
 //child_changed might be jank code, player.ref(attackArray) starts off equal to false
 //as soon as 5 attack inputs are made by player 1, attackArray "changes" thus we are able
 //to use the event listener (for firebase) on("child_changed")
 //wanted to use playersRef.attackArray.on("value")... in order to be specific.. but not sure how that code would look like
-playersRef.on("child_changed", function(snapshot){
+
+attack1Ref.on("value", function(snapshot){
+	playerOneAttack = snapshot.val();
+	console.log(playerOneAttack);
 	//i.e. startAttack();
 	setTimeout(function(){doThis()},1000);
 		//console.log(playerOneData.attackArray);
-		console.log(snapshot);
+		//console.log(snapshot);
 	function doThis () {
 	x = 0;
 	$("#attacks").empty();
 	if (currentPhase === "attackDefend"){
-		$("#attacks").append(playerOneData.attackArray[x]);
-		console.log(playerOneData.attackArray[x]);
-		attackTimer = setInterval(function(){displayAttack1()},1000);
+		$("#attacks").append(playerOneAttack[x]);
+		attackTimer1 = setInterval(function(){displayAttack1()},1000);
 	}
-	else if (currentPhase === "defendAttack"){
-		$("#attacks").append(playerTwoData.attackArray[x]);
-		console.log(playerTwoData.attackArray[x]);
-		attackTimer = setInterval(function(){displayAttack2()},1000);
-	}
+	/*else if (currentPhase === "defendAttack"){
+		$("#attacks").append(playerTwoAttack[x]);*/
+		//console.log(playerTwoData.attackArray[x]);
+		//attackTimer = setInterval(function(){displayAttack2()},1000);
+	//}
 }
 
 	function displayAttack1 () {
-		console.log(x);
-		parryCheck();
+		parryCheck1();
 		x++;
 		$("#attacks").empty();
-		$("#attacks").append(playerOneData.attackArray[x]);
+		$("#attacks").append(playerOneAttack[x]);
+		console.log(playerOneAttack[x]);
 
 		if (x > 4){
-			clearInterval(attackTimer);
+			clearInterval(attackTimer1);
 			setTimeout(function(){
 			$("#attacks").empty();
 			$("#message").text("");//},1000);
-			if ((currentPhase === "attackDefend") && (playerOne)){
+			//if ((currentPhase === "attackDefend") && (playerOne)){
 				currentPhaseRef.set("defendAttack");
 				console.log(currentPhase);
-			}
-			else if ((currentPhase === "defendAttack") && (playerOne === false)){
-				currentPhaseRef.set("attackDefend");
-				console.log(currentPhase);
-			}},1000);
+				//attack1Ref.disconnect();
+			//}
+			//else if ((currentPhase === "defendAttack") && (playerOne === false)){
+				//currentPhaseRef.set("attackDefend");
+				//console.log(currentPhase);
+			},1000);
 		//document.addEventListener('keydown', attackInputs, true);
 		//document.removeEventListener('keydown', defendInputs, true);
 		}
+	}
+
+	function parryCheck1() {
+	if (currentPhase === "attackDefend"){
+		if (playerOneAttack[x] === defendMechanic) {
+			$("#message").text("Parried!");
+			//basically if player 1 attacks, and p2 puts right input, p2 parries
+		}
+		else if (playerIndex === 2) {
+		$("#message").text("You took a hit!");
+			playersRef.child("2").child("health").set(playerTwoData.health - 5);
+		}
+		else {
+			$("#message").text("");
+			//nothing should be shown for p1, prolly jank cause sometimes parry shows up
+		}
+	}
+	defendMechanic = "";
+}
+
+});
+
+attack2Ref.on("value", function(snapshot){
+	playerTwoAttack = snapshot.val();
+	//i.e. startAttack();
+	setTimeout(function(){doThat()},1000);
+		//console.log(playerOneData.attackArray);
+		console.log(snapshot.val());
+	function doThat () {
+	y = 0;
+	$("#attacks").empty();
+	if (currentPhase === "defendAttack"){
+		console.log(y);
+		$("#attacks").append(playerTwoAttack[y]);
+		attackTimer2 = setInterval(function(){displayAttack2()},1000);
+}
+	/*else if (currentPhase === "defendAttack"){
+		$("#attacks").append(playerTwoData.attackArray[x]);
+		console.log(playerTwoData.attackArray[x]);
+		attackTimer = setInterval(function(){displayAttack2()},1000);
+	}*/
 	}
 
 	function displayAttack2 () {
-		console.log(x);
-		parryCheck();
-		x++;
+		parryCheck2();
+		y++;
 		$("#attacks").empty();
-		$("#attacks").append(playerTwoData.attackArray[x]);
+		$("#attacks").append(playerTwoAttack[y]);
+		console.log(playerTwoAttack[y]);
 
-		if (x > 4){
-			clearInterval(attackTimer);
+		if (y > 4){
+			clearInterval(attackTimer2);
 			setTimeout(function(){
 			$("#attacks").empty();
 			$("#message").text("");//},1000);
-			if ((currentPhase === "attackDefend") && (playerOne === false)){
-				currentPhaseRef.set("defendAttack");
-				console.log(currentPhase);
-			}
-			else if ((currentPhase === "defendAttack") && (playerOne)){
+			attack2Ref.remove();
+			//if ((currentPhase === "attackDefend") && (playerOne === false)){
+				//currentPhaseRef.set("defendAttack");
+				//console.log(currentPhase);
+			//}
+			//else if ((currentPhase === "defendAttack") && (playerOne)){
 				currentPhaseRef.set("attackDefend");
 				console.log(currentPhase);
-			}},1000);
+			},1000);
 		//document.addEventListener('keydown', attackInputs, true);
 		//document.removeEventListener('keydown', defendInputs, true);
 		}
 	}
+
+	function parryCheck2 () {
+	if (currentPhase === "defendAttack"){
+		if (playerTwoAttack[y] === defendMechanic) {
+			console.log(playerTwoAttack[y]);
+			$("#message").text("Parried!");
+		}
+		else if (playerIndex === 1) {
+			$("#message").text("You took a hit!");
+			playersRef.child("1").child("health").set(playerOneData.health - 5);
+		}
+		else {
+			$("#message").text("");
+		}
+	}
+	defendMechanic = "";
+}
 });
 
 function enterGame (){
@@ -240,7 +328,7 @@ playersRef.on("value", function(snapshot) {
 
 //currentPhase.child("phase").set("attackDefend")
 
-//document.addEventListener('keydown', attackInputs, false);
+//document.addEventListener('keydown', attackInputs, true);
 
 //document.addEventListener('keydown', defendInputs, false);
 
@@ -399,48 +487,24 @@ if (blankArray.length === 5) {
 	attackSetUpPhase = blankArray.slice(0, 6);
 	//attackReady = attackSetUpPhase;
 	if (currentPhase === "attackDefend"){
-		playersRef.child("1").child("attackArray").set(playerOneData.attackArray = attackSetUpPhase);
+		attack1Ref.set(attackSetUpPhase);
 	}
 	else if (currentPhase === "defendAttack"){
-		playersRef.child("2").child("attackArray").set(playerTwoData.attackArray = attackSetUpPhase);
+		attack2Ref.set(attackSetUpPhase);
 	}
 	blankArray = [];
 	//startAttack();
 	}
 }
 
-/*function startAttack () {
-	x = 0;
-	$("#attacks").empty();
-	$("#attacks").append(attackReady[x]);
-	attackTimer = setInterval(function(){displayAttack()},1000);
-}*/
-
-/*function displayAttack () {
-	console.log(x);
-	parryCheck();
-	x++;
-	$("#attacks").empty();
-	$("#attacks").append(attackReady[x]);
-
-	if (x > 4){
-		clearInterval(attackTimer);
-		setTimeout(function(){
-			$("#attacks").empty();
-			$("#message").text("");},1000);
-		document.addEventListener('keydown', attackInputs, true);
-		document.removeEventListener('keydown', defendInputs, true);
-		}
-	}*/
-
-function parryCheck() {
+/*function parryCheck1() {
 	if (currentPhase === "attackDefend"){
-		if (playerOneData.attackArray[x] === defendMechanic) {
+		if (playerOneAttack[x] === defendMechanic) {
 			$("#message").text("Parried!");
 			//basically if player 1 attacks, and p2 puts right input, p2 parries
 		}
-		else if (playerIndex === 2) {
-			if (hit1 === false && hit2 === false && hit3 === false && hit4 === false && hit5 === false) {
+		else if (playerIndex === 2) {*/
+			/*if (hit1 === false && hit2 === false && hit3 === false && hit4 === false && hit5 === false) {
 				$("#message").text("You took a hit!");
 				hit1 = true;
 				playersRef.child("2").child("health").set(playerTwoData.health - 5);
@@ -450,37 +514,55 @@ function parryCheck() {
 				hit2 = true;
 				playersRef.child("2").child("health").set(playerTwoData.health - 5);
 				//etc.
-		}
-	}
-		else {
-			$("#message").text("");
+			}
+			else if (hit1 && hit2 && hit3 === false && hit4 === false && hit5 === false) {
+				$("#message").text("You took a hit!");
+				hit3 = true;
+				playersRef.child("2").child("health").set(playerTwoData.health - 5);
+				//etc.
+			}
+			else if (hit1 && hit2 && hit3 && hit4 === false && hit5 === false) {
+				$("#message").text("You took a hit!");
+				hit4 = true;
+				playersRef.child("2").child("health").set(playerTwoData.health - 5);
+				//etc.
+			}
+			else if (hit1 && hit2 && hit3 && hit4 && hit5 === false) {
+				$("#message").text("You took a hit!");
+				hit5 = true;
+				playersRef.child("2").child("health").set(playerTwoData.health - 5);
+				//etc.
+			}
+			else if (hit1 && hit2 && hit3 && hit4 && hit5) {
+				x = 0;
+				//wont need this else if code probably at all
+			}*/
+			//$("#message").text("You took a hit!");
+			//playersRef.child("2").child("health").set(playerTwoData.health - 5);
+		//}
+		//else {
+			//$("#message").text("");
 			//nothing should be shown for p1, prolly jank cause sometimes parry shows up
-		}
-	}
+		//}
+	//}
+	//defendMechanic = "";
+//}
+
+/*function parryCheck2 () {
 	if (currentPhase === "defendAttack"){
-		if (playerTwoData.attackArray[x] === defendMechanic) {
+		if (playerTwoAttack[y] === defendMechanic) {
+			console.log(playerTwoAttack[y]);
 			$("#message").text("Parried!");
 		}
 		else if (playerIndex === 1) {
 			$("#message").text("You took a hit!");
+			playersRef.child("1").child("health").set(playerOneData.health - 5);
 		}
 		else {
 			$("#message").text("");
 		}
 	}
 	defendMechanic = "";
-}
-function doNothing () {};
-
-function hitConfirm() {
-    /*var executed = false;
-    return function () {
-        if (!executed) {
-            executed = true;*/
-            playersRef.child("2").child("health").set(playerTwoData.health - 5);
-            return
-        //}
-   // };
-}
+}*/
 
 });
