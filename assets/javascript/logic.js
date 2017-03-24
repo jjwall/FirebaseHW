@@ -159,7 +159,7 @@ attack1Ref.on("value", function(snapshot){
 			$("#attacks").empty();
 			$("#message").text("");//},1000);
 			//if ((currentPhase === "attackDefend") && (playerOne)){
-				attack1Ref.set("false");
+				attack1Ref.set("     ");
 				currentPhaseRef.set("defendAttack");
 				console.log(currentPhase);
 				//attack1Ref.disconnect();
@@ -182,6 +182,13 @@ attack1Ref.on("value", function(snapshot){
 		else if (playerIndex === 2) {
 		$("#message").text("You took a hit!");
 			playersRef.child("2").child("health").set(playerTwoData.health - 5);
+			if (playerTwoData.health <= 0) {
+				alert("p1 wins!");
+				//could set wins here,
+				//could push wins from here to api
+				//could append reset button, which is how you should do it
+				// - > settimeout append reset button??
+			}
 		}
 		else {
 			$("#message").text("");
@@ -232,7 +239,7 @@ attack2Ref.on("value", function(snapshot){
 				//console.log(currentPhase);
 			//}
 			//else if ((currentPhase === "defendAttack") && (playerOne)){
-				attack2Ref.set("false");
+				attack2Ref.set("     ");
 				currentPhaseRef.set("attackDefend");
 				console.log(currentPhase);
 			},1000);
@@ -250,6 +257,9 @@ attack2Ref.on("value", function(snapshot){
 		else if (playerIndex === 1) {
 			$("#message").text("You took a hit!");
 			playersRef.child("1").child("health").set(playerOneData.health - 5);
+			if (playerOneData.health <= 0) {
+				alert("p2 wins!");
+			}
 		}
 		else {
 			$("#message").text("");
