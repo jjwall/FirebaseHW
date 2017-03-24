@@ -49,9 +49,9 @@ var database = firebase.database();
 
 var playersRef = database.ref("players");
 
-var attack1Ref = database.ref("players/1/attackArray");
+var attack1Ref = database.ref("players/1/attackArray1");
 
-var attack2Ref = database.ref("players/2/attackArray");
+var attack2Ref = database.ref("players/2/attackArray2");
 
 var currentPhaseRef = database.ref("phase");
 
@@ -88,8 +88,8 @@ playersRef.on("value", function(snapshot) {
 	playerOneData = snapshot.child("1").val();
   	playerTwoData = snapshot.child("2").val();
 
-  	playerOneAttack = snapshot.child("1/attackArray").val();
-  	playerTwoAttack = snapshot.child("2/attackArray").val();
+  	playerOneAttack = snapshot.child("1/attackArray1").val();
+  	playerTwoAttack = snapshot.child("2/attackArray2").val();
   	console.log(playerOneAttack);
 });
 
@@ -136,6 +136,7 @@ attack1Ref.on("value", function(snapshot){
 	$("#attacks").empty();
 	if (currentPhase === "attackDefend"){
 		$("#attacks").append(playerOneAttack[x]);
+		console.log(playerOneAttack[x]);
 		attackTimer1 = setInterval(function(){displayAttack1()},1000);
 	}
 	/*else if (currentPhase === "defendAttack"){
@@ -158,6 +159,7 @@ attack1Ref.on("value", function(snapshot){
 			$("#attacks").empty();
 			$("#message").text("");//},1000);
 			//if ((currentPhase === "attackDefend") && (playerOne)){
+				attack1Ref.set("false");
 				currentPhaseRef.set("defendAttack");
 				console.log(currentPhase);
 				//attack1Ref.disconnect();
@@ -230,6 +232,7 @@ attack2Ref.on("value", function(snapshot){
 				//console.log(currentPhase);
 			//}
 			//else if ((currentPhase === "defendAttack") && (playerOne)){
+				attack2Ref.set("false");
 				currentPhaseRef.set("attackDefend");
 				console.log(currentPhase);
 			},1000);
