@@ -9,28 +9,84 @@
 	<script src="https://code.jquery.com/jquery-3.1.1.js"></script>
 	<!--link to js file-->
 	<script type="text/javascript" src="assets/javascript/logic.js"></script>
+	<!--link to style shee-->
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 	<!--link to firebase-->
 	<script src="https://www.gstatic.com/firebasejs/3.6.10/firebase.js"></script>
 </head>
 <body>
-	<div id = "dynamic_button">
-		<button id = "start">Start</button>
+<div class = "row">
+	<div  class="col-md-4">	
+	<div class="panel panel-default" id = "p1box">
+  		<div class="panel-heading">
+   			<h3 class="panel-title">
+   				<div id = "player1-name"></div>
+   			</h3>
+  		</div>
+  		<div class="panel-body">
+    		<div class="progress">
+   				<div id = "p1-health" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    			</div>
+			</div>
+  		</div>
 	</div>
-	<div id = "attacks"></div>
-	<div id = "message"></div>
-	<div id = "player1-name"></div>
+	</div>
+	<div class= "col-md-4" id = "actionbox">
+		<div id = "dynamic_button">
+			<button id = "start">Start</button>
+		</div>
+		<div class = "well well-lg">
+			<div id = "attacks"></div>
+			<div id = "message"></div>
+		</div>
+	</div>
 	<!--<div id = "player1-wins"></div>-->
-	<div class="progress">
-   		<div id = "p1-health" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-    	</div>
-	</div>
-	<div id = "player1-losses"></div>
-	<div id = "player2-name"></div>
+	<!--<div id = "player1-losses"></div>-->
+	<div  class="col-md-4">	
+		<div class="panel panel-default" id = "p2box">
+  			<div class="panel-heading">
+   				<h3 class="panel-title">
+   					<div id = "player2-name"></div>
+   				</h3>
+  			</div>
 	<!--<div id = "player2-wins"></div>-->
-	<div class="progress">
-   		<div id = "p2-health" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-    	</div>
+		<div class="panel-body">
+    		<div class="progress">
+   				<div id = "p2-health" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    			</div>
+			</div>
+  		</div>
 	</div>
-	<div id = "player2-losses"></div>
+	</div>
+	<!--<div id = "player2-losses"></div>-->
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Instructions <button id = "hide_button"><div id = "hide_text"></div></button></h3>
+  </div>
+  <div class="panel-body" id = "instructions_script">
+    This game is a two player multiplayer game. It is meant to simulate a kind of sword-fighting and magic spell using experience. You can think of it as a complex game of Rock Paper Scissors. However, instead of each player sending out one move at the same time where the better of the two wins, players simultaneously take turns attacking and defending. The player attacking will send out a barrage of 5 attacks at a time and the defending player will have to parry each attack, one at a time and will have exactly one second to react to each attack.  Attacking players have 8 options for different attacks to send out, while defending players will only have one option to parry the given attack. Attacks comprise of 4 sword slashes (using the arrow keys) and 4 magic spells (using keys Q,W,E and R).
+    <br>
+    <strong>Left</strong> Key is a top left to bottom right sword swipe ( <button type="button" class="btn btn-default" aria-label="Left Align"> \ </button> )
+    <br>
+    <strong>Right</strong> Key is a top right to bottom left sword swipe ( <button type="button" class="btn btn-default" aria-label="Left Align"> / </button> )
+    <br>
+    <strong>Up</strong> Key is a vertical sword slash ( <button type="button" class="btn btn-default" aria-label="Left Align"> | </button> )
+    <br>
+    <strong>Down</strong> Key is a horizontal sword slash ( <button type="button" class="btn btn-default" aria-label="Left Align"> - </button> )
+    <br>
+    <strong>Q</strong> Key is a magical frost blast ( <button type="button" class="btn btn-default" aria-label="Left Align"> * </button> )
+   	<br>
+   	<strong>W</strong> Key is a magical thunder strike ( <button type="button" class="btn btn-default" aria-label="Left Align"> ~ </button> )
+   	<br>
+   	<strong>E</strong> Key is a magical fire blast ( <button type="button" class="btn btn-default" aria-label="Left Align"> X </button> )
+   	<br>
+   	<strong>R</strong> Key is a magical earth crack ( <button type="button" class="btn btn-default" aria-label="Left Align"> ^ </button> )
+   	<br>
+   	Parry methods differ for sword attacks and magical attacks. To parry <strong>sword attacks</strong>, you simply need to input the <em>opposite</em> attack that you see on the screen. So if you see an incoming vertical slash attack ( <button type="button" class="btn btn-default" aria-label="Left Align"> | </button> ) you would need to input the <strong>Down</strong> Key to block with a horizontal slash and vice versa. If you see an incoming top right to bottom left sword swipe attack ( <button type="button" class="btn btn-default" aria-label="Left Align"> / </button> ) you would need to input the <strong>Right</strong> Key to block with a top left to bottom right sword swipe ( <button type="button" class="btn btn-default" aria-label="Left Align"> \ </button> ) and vice versa.
+   	<br>
+   	Parrying <strong>magical attacks</strong> is like playing RPS with 4 elements instead of 3.  So instead of rock beats scissors beats paper beats rock, it goes: Thunder ( <button type="button" class="btn btn-default" aria-label="Left Align"> ~ </button> ) parries earth ( <button type="button" class="btn btn-default" aria-label="Left Align"> ^ </button> ) parries fire ( <button type="button" class="btn btn-default" aria-label="Left Align"> X </button> ) parries ice ( <button type="button" class="btn btn-default" aria-label="Left Align"> * </button> ) parries thunder ( <button type="button" class="btn btn-default" aria-label="Left Align"> ~ </button> ).  Player 1 attacks first, good luck!
+  </div>
+</div>
 </body>
 </html>

@@ -1,0 +1,29 @@
+body {
+	width: 97%;
+}
+
+#p1box {
+	margin-top: 15px;
+}
+
+#p2box {
+	margin-top: 15px;
+}
+
+#actionbox {
+	margin-top: 30px;
+}
+
+#dynamic_button {
+	text-align: center;
+}
+
+#attacks {
+	text-align: center;
+	font-size: 50px;
+	font-weight: bold;
+}
+
+#message {
+	text-align: center;
+}

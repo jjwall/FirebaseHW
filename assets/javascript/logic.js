@@ -79,6 +79,18 @@ var playerTwoData = null;
 var peoplePlaying = null;
 //no totally sure how this varialbe operates, but something like = 0 is 1 player, = 1 is 2 players
 
+$("#hide_text").text("hide");
+
+$("#hide_button").on("click", function(){
+	$("#instructions_script").toggle();
+	if ($("#hide_text").text() === "hide") {
+		$("#hide_text").text("show");
+	}
+	else if ($("#hide_text").text() === "show") {
+		$("#hide_text").text("hide");
+	}
+})
+
 playersRef.on("value", function(snapshot) {
 	peoplePlaying = snapshot.numChildren();
 
