@@ -1,4 +1,4 @@
-#Firebase Game
+# Firebase Game
 
 This game is a two player multiplayer game. It is meant to simulate a kind of sword-fighting and magic spell using experience. You can think of it as a complex game of Rock Paper Scissors. However, instead of each player sending out one move at the same time where the better of the two wins, players sequentially take turns attacking and defending. The player attacking will send out a barrage of 5 attacks at a time and the defending player will have to parry each attack, one at a time and will have exactly one second to react to each attack.  Attacking players have 8 different options for attacks to send out. While defending players also have 8 options to defend with, only one of those options will parry the displayed attack. Attacks comprise of 4 sword slashes (using the arrow keys) and 4 magic spells (using keys Q,W,E and R).
 
